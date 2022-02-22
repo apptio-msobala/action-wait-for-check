@@ -18,7 +18,7 @@ const run = () =>
     intervalSeconds: 0.1
   })
 
-test('returns conclusion of completed check', async () => {
+test('returns \'timed_out\' even if some completed', async () => {
   client.checks.listForRef.mockResolvedValue({
     data: {
       check_runs: [
@@ -37,7 +37,7 @@ test('returns conclusion of completed check', async () => {
 
   const result = await run()
 
-  expect(result).toBe('success')
+  expect(result).toBe('timed_out')
   expect(client.checks.listForRef).toHaveBeenCalledWith({
     owner: 'testOrg',
     repo: 'testRepo',
@@ -82,7 +82,7 @@ test('polls until check is completed', async () => {
 
   const result = await run()
 
-  expect(result).toBe('failure')
+  expect(result).toBe('all_completed')
   expect(client.checks.listForRef).toHaveBeenCalledTimes(3)
 })
 

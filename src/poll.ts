@@ -44,18 +44,16 @@ export const poll = async (options: Options): Promise<string> => {
       `Retrieved ${result.data.check_runs.length} check runs named ${checkName}`
     )
 
-    const completedCheck = result.data.check_runs.find(
+    const allCompletedCheck = result.data.check_runs.every(
       checkRun => checkRun.status === 'completed'
     )
-    if (completedCheck) {
-      log(
-        `Found a completed check with id ${completedCheck.id} and conclusion ${completedCheck.conclusion}`
-      )
-      return completedCheck.conclusion
+    if (allCompletedCheck) {
+      log(`All ${result.data.check_runs.length} runs found are completed`)
+      return 'all_completed'
     }
 
     log(
-      `No completed checks named ${checkName}, waiting for ${intervalSeconds} seconds...`
+      `Not all checks named ${checkName} are completed, waiting for ${intervalSeconds} seconds...`
     )
     await wait(intervalSeconds * 1000)
 
@@ -63,7 +61,7 @@ export const poll = async (options: Options): Promise<string> => {
   }
 
   log(
-    `No completed checks after ${timeoutSeconds} seconds, exiting with conclusion 'timed_out'`
+    `Not all checks are completed after ${timeoutSeconds} seconds, exiting with conclusion 'timed_out'`
   )
   return 'timed_out'
 }

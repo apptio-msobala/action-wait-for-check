@@ -1,5 +1,5 @@
-name: 'Wait For Check'
-description: 'Wait for another GitHub check to complete'
+name: 'Wait Until Check Completed'
+description: 'Wait until another GitHub check is complete'
 author: 'Fountainhead Technologies Ltd.'
 branding:
   icon: 'check-circle'
@@ -12,14 +12,19 @@ inputs:
     description: 'The name of the GitHub check to wait for. For example, `build` or `deploy`.'
     required: true
   ref:
+    required: false
     description: 'The Git ref of the commit you want to poll for a passing check.'
   repo:
+    required: false
     description: 'The name of the GitHub repository you want to poll for a passing check.'
   owner:
+    required: false
     description: 'The owner of the GitHub repository you want to poll for a passing check.'
   timeoutSeconds:
+    required: false
     description: 'The number of seconds to wait for the check to complete.'
   intervalSeconds:
+    required: false
     description: 'The number of seconds to wait before each poll of the GitHub API.'
 runs:
   using: 'node12'

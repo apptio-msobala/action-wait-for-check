@@ -1,8 +1,8 @@
 {
-  "name": "action-wait-for-check",
+  "name": "action-wait-until-check-complete",
   "version": "1.0.0",
   "private": true,
-  "description": "A GitHub action that waits for other GitHub checks to complete",
+  "description": "A GitHub action that waits until other GitHub checks are completed",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",

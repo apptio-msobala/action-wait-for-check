@@ -19,7 +19,9 @@ async function run(): Promise<void> {
       intervalSeconds: parseInt(core.getInput('intervalSeconds') || '10')
     })
 
-    core.setOutput('conclusion', result)
+    if (result === 'timed_out') {
+      core.setFailed(result)
+    }
   } catch (error) {
     core.setFailed(error.message)
   }

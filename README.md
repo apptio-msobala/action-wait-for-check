@@ -2,15 +2,15 @@
   <a href="https://github.com/fountainhead/action-wait-for-check/actions"><img alt="action-wait-for-check status" src="https://github.com/fountainhead/action-wait-for-check/workflows/build-test/badge.svg"></a>
 </p>
 
-# GitHub Action: Wait for Check
+# GitHub Action: Wait for all Checks completion
 
-A GitHub Action that allows you to wait for another GitHub check to complete. This is useful if you want to run one Workflow after another one finishes.
+A GitHub Action that allows you to wait for another GitHub check until all are completed. This is useful if you want to run one Workflow only if another is not running.
 
 ## Example Usage
 
 ```yaml
     steps:
-      - name: Wait for build to succeed
+      - name: Wait for all builds to complete
         uses: fountainhead/action-wait-for-check@v1.0.0
         id: wait-for-build
         with:
@@ -18,11 +18,6 @@ A GitHub Action that allows you to wait for another GitHub check to complete. Th
           checkName: build
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Do something with a passing build
-        if: steps.wait-for-build.outputs.conclusion == 'success'
-
-      - name: Do something with a failing build
-        if: steps.wait-for-build.outputs.conclusion == 'failure'
 ```
 ## Inputs
 
@@ -75,14 +70,6 @@ This Action accepts the following configuration parameters via `with:`
 
   The number of seconds to wait before each poll of the GitHub API for checks on this commit.
 
-## Outputs
+## Result
 
-This Action emits a single output named `conclusion`. Like the field of the same name in the [CheckRunEvent API Response](https://developer.github.com/v3/activity/events/types/#checkrunevent-api-payload), it may be one of the following values:
-
-- `success`
-- `failure`
-- `neutral`
-- `timed_out`
-- `action_required`
-
-These correspond to the `conclusion` state of the Check you're waiting on. In addition, this action will emit a conclusion of `timed_out` if the Check specified didn't complete within `timeoutSeconds`.
+This action fails if any error occurred or timeout was reached.
