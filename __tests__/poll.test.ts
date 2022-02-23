@@ -18,7 +18,7 @@ const run = () =>
     intervalSeconds: 0.1
   })
 
-test('returns \'timed_out\' even if some completed', async () => {
+test("returns 'timed_out' even if some completed", async () => {
   client.checks.listForRef.mockResolvedValue({
     data: {
       check_runs: [
