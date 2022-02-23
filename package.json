@@ -1,6 +1,6 @@
 {
   "name": "action-wait-until-check-complete",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "A GitHub action that waits until other GitHub checks are completed",
   "main": "lib/main.js",
