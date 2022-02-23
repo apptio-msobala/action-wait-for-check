@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/fountainhead/action-wait-for-check/actions"><img alt="action-wait-for-check status" src="https://github.com/fountainhead/action-wait-for-check/workflows/build-test/badge.svg"></a>
+  <a href="https://github.com/apptio-msobala/action-wait-until-check-complete/actions"><img alt="action-wait-until-check-complete status" src="https://github.com/apptio-msobala/action-wait-until-check-complete/workflows/build-test/badge.svg"></a>
 </p>
 
 # GitHub Action: Wait for all Checks completion
@@ -11,7 +11,7 @@ A GitHub Action that allows you to wait for another GitHub check until all are c
 ```yaml
     steps:
       - name: Wait for all builds to complete
-        uses: fountainhead/action-wait-for-check@v1.0.0
+        uses: apptio-msobala/action-wait-until-check-complete@v1.0.1
         id: wait-for-build
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -44,7 +44,8 @@ This Action accepts the following configuration parameters via `with:`
   The Git ref of the commit you want to poll for a passing check.
   
   *PROTIP: You may want to use `github.pull_request.head.sha` when working with Pull Requests.*
-
+ 
+  *PROTIP2: You may want to use `refs/heads/{branch}` if you want to observe a particular branch.*
   
 - `repo`
 
