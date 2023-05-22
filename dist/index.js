@@ -6,25 +6,6 @@
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,6 +15,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github_1 = __nccwpck_require__(5438);
@@ -42,8 +30,8 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const token = core.getInput('token', { required: true });
-            const result = yield (0, poll_1.poll)({
-                client: (0, github_1.getOctokit)(token),
+            const result = yield poll_1.poll({
+                client: new github_1.GitHub(token),
                 log: msg => core.info(msg),
                 checkName: core.getInput('checkName', { required: true }),
                 owner: core.getInput('owner') || github_1.context.repo.owner,
@@ -52,10 +40,12 @@ function run() {
                 timeoutSeconds: parseInt(core.getInput('timeoutSeconds') || '600'),
                 intervalSeconds: parseInt(core.getInput('intervalSeconds') || '10')
             });
-            core.setOutput('conclusion', result);
+            if (result === 'timed_out') {
+                core.setFailed(result);
+            }
         }
         catch (error) {
-            core.setFailed(error instanceof Error ? error : JSON.stringify(error));
+            core.setFailed(error.message);
         }
     });
 }
@@ -79,36 +69,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.poll = void 0;
 const wait_1 = __nccwpck_require__(5817);
-const poll = (options) => __awaiter(void 0, void 0, void 0, function* () {
+exports.poll = (options) => __awaiter(void 0, void 0, void 0, function* () {
     const { client, log, checkName, timeoutSeconds, intervalSeconds, owner, repo, ref } = options;
     let now = new Date().getTime();
     const deadline = now + timeoutSeconds * 1000;
     while (now <= deadline) {
         log(`Retrieving check runs named ${checkName} on ${owner}/${repo}@${ref}...`);
-        const result = yield client.rest.checks.listForRef({
+        const result = yield client.checks.listForRef({
+            // eslint-disable-next-line @typescript-eslint/camelcase
             check_name: checkName,
             owner,
             repo,
             ref
         });
         log(`Retrieved ${result.data.check_runs.length} check runs named ${checkName}`);
-        const completedCheck = result.data.check_runs.find(checkRun => checkRun.status === 'completed');
-        if (completedCheck) {
-            log(`Found a completed check with id ${completedCheck.id} and conclusion ${completedCheck.conclusion}`);
-            // conclusion is only `null` if status is not `completed`.
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            return completedCheck.conclusion;
+        const allCompletedCheck = result.data.check_runs.every(checkRun => checkRun.status === 'completed');
+        if (allCompletedCheck) {
+            log(`All ${result.data.check_runs.length} runs found are completed`);
+            return 'all_completed';
         }
-        log(`No completed checks named ${checkName}, waiting for ${intervalSeconds} seconds...`);
-        yield (0, wait_1.wait)(intervalSeconds * 1000);
+        log(`Not all checks named ${checkName} are completed, waiting for ${intervalSeconds} seconds...`);
+        yield wait_1.wait(intervalSeconds * 1000);
         now = new Date().getTime();
     }
-    log(`No completed checks after ${timeoutSeconds} seconds, exiting with conclusion 'timed_out'`);
+    log(`Not all checks are completed after ${timeoutSeconds} seconds, exiting with conclusion 'timed_out'`);
     return 'timed_out';
 });
-exports.poll = poll;
 
 
 /***/ }),
@@ -128,7 +115,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.wait = void 0;
 function wait(milliseconds) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise(resolve => {
