@@ -11,7 +11,7 @@ A GitHub Action that allows you to wait for another GitHub check until all are c
 ```yaml
     steps:
       - name: Wait for all builds to complete
-        uses: apptio-msobala/action-wait-until-check-complete@v1.0.1
+        uses: apptio-msobala/action-wait-until-check-complete@v1.1.1
         id: wait-for-build
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -42,9 +42,9 @@ This Action accepts the following configuration parameters via `with:`
   **Default: `github.sha`**
   
   The Git ref of the commit you want to poll for a passing check.
-  
-  *PROTIP: You may want to use `github.pull_request.head.sha` when working with Pull Requests.*
- 
+
+  _PROTIP: You may want to use `github.event.pull_request.head.sha` when working with Pull Requests._
+
   *PROTIP2: You may want to use `refs/heads/{branch}` if you want to observe a particular branch.*
   
 - `repo`

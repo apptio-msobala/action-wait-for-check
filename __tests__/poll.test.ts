@@ -1,8 +1,10 @@
 import {poll} from '../src/poll'
 
 const client = {
-  checks: {
-    listForRef: jest.fn()
+  rest: {
+    checks: {
+      listForRef: jest.fn()
+    }
   }
 }
 
@@ -19,7 +21,7 @@ const run = () =>
   })
 
 test("returns 'timed_out' even if some completed", async () => {
-  client.checks.listForRef.mockResolvedValue({
+  client.rest.checks.listForRef.mockResolvedValue({
     data: {
       check_runs: [
         {
@@ -38,7 +40,7 @@ test("returns 'timed_out' even if some completed", async () => {
   const result = await run()
 
   expect(result).toBe('timed_out')
-  expect(client.checks.listForRef).toHaveBeenCalledWith({
+  expect(client.rest.checks.listForRef).toHaveBeenCalledWith({
     owner: 'testOrg',
     repo: 'testRepo',
     ref: 'abcd',
@@ -47,7 +49,7 @@ test("returns 'timed_out' even if some completed", async () => {
 })
 
 test('polls until check is completed', async () => {
-  client.checks.listForRef
+  client.rest.checks.listForRef
     .mockResolvedValueOnce({
       data: {
         check_runs: [
@@ -83,11 +85,11 @@ test('polls until check is completed', async () => {
   const result = await run()
 
   expect(result).toBe('all_completed')
-  expect(client.checks.listForRef).toHaveBeenCalledTimes(3)
+  expect(client.rest.checks.listForRef).toHaveBeenCalledTimes(3)
 })
 
 test(`returns 'timed_out' if exceeding deadline`, async () => {
-  client.checks.listForRef.mockResolvedValue({
+  client.rest.checks.listForRef.mockResolvedValue({
     data: {
       check_runs: [
         {
