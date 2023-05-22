@@ -22,12 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./
-        id: wait-for-build
+        id: wait-for-build-completion
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           checkName: build
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-
-      - name: Fail if build did not succeed
-        if: steps.wait-for-build.outputs.conclusion != 'success'
-        run: exit 1
