@@ -11,7 +11,7 @@ A GitHub Action that allows you to wait for another GitHub check until all are c
 ```yaml
     steps:
       - name: Wait for all builds to complete
-        uses: apptio-msobala/action-wait-until-check-complete@v1.0.1
+        uses: apptio-msobala/action-wait-until-check-complete@v1.1.1
         id: wait-for-build
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
